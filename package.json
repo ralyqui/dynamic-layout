@@ -1,0 +1,20 @@
+{
+  "name": "dynamic-layout",
+  "version": "0.0.1",
+  "description": "Library that dynamically positions elements in grids",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "clean-build": "npm run clean & tsc",
+    "clean": "rm -rf lib/*"
+  },
+  "files": ["lib/*"],
+  "author": "Raul Abdurakhmanov",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "2.7.1",
+    "typescript": "^4.7.4"
+  }
+}
