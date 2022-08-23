@@ -1,0 +1,18 @@
+{
+    "extends": [
+        "airbnb-base",
+        "airbnb-typescript/base",
+        "prettier"
+    ],
+    "plugins": [
+        "prettier"
+    ],
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    },
+    "rules": {
+        "@typescript-eslint/quotes": ["off", "double"],
+        "no-plusplus": 0,
+        "no-restricted-syntax": 0
+    }
+}
