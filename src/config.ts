@@ -4,3 +4,5 @@ export const GRID_ELEMENT_VISIBLE = `${GRID_ELEMENT}-visible`;
 export const COMPACT_GRID_SELECTOR = "compact";
 export const ELEMENT_ACTIVE = "dynamic-layout-active";
 export const GRID_SELECTOR_ID = "dynamic-grid-id";
+export const SPACING_X = "dynamic-mx";
+export const SPACING_Y = "dynamic-my";

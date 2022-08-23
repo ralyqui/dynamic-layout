@@ -5,23 +5,26 @@ import {
   getData,
   setData,
   makeVisible,
+  parseTagValue,
 } from "./helper";
 import * as config from "./config";
 
 interface CompactData {
   columnHeight: Map<number, number>;
   columnCnt: number;
+  spacing: [number, number]; // Distance separating tiles [x,y]
 }
 
 export function renderCompact(grid: Element) {
   const id = getGridId(grid);
   const elements = getGridElements(grid);
   let columnAmount = calcColumns(grid);
+  let spacing = parseSpacing(grid);
   if (id == -1) {
     let new_id = putGridId(grid);
-    fillColumns(grid, new_id, elements, columnAmount);
+    fillColumns(grid, new_id, elements, columnAmount, spacing);
   } else {
-    fillColumns(grid, id, elements, columnAmount);
+    fillColumns(grid, id, elements, columnAmount, spacing);
   }
 }
 
@@ -29,8 +32,9 @@ export function updateCompact(grid: Element) {
   const id = getGridId(grid);
   const elements = getGridElements(grid).filter((el) => !isMarked(el));
   let columnAmount = calcColumns(grid);
+  let spacing = parseSpacing(grid);
   if (id != -1) {
-    updateColumns(grid, id, elements, columnAmount);
+    updateColumns(grid, id, elements, columnAmount, spacing);
   }
 }
 
@@ -56,7 +60,7 @@ function getElementWidth(grid: Element) {
 }
 
 function calcColumns(grid: Element) {
-  const elementWidth = getElementWidth(grid);
+  const elementWidth = getElementWidth(grid) + parseSpacing(grid)[0];
   return Math.floor((grid as HTMLElement).offsetWidth / elementWidth);
 }
 
@@ -74,7 +78,12 @@ function getMinColumn(gridId: number): [number, number] {
   return [minIdx, min];
 }
 
-function placeElement(e: Element, grid: Element, columnAmount: number) {
+function placeElement(
+  e: Element,
+  grid: Element,
+  columnAmount: number,
+  spacing: [number, number]
+) {
   const id = getGridId(grid);
   markProcessed(e);
   let [columnId, currentHeight] = getMinColumn(id);
@@ -83,11 +92,12 @@ function placeElement(e: Element, grid: Element, columnAmount: number) {
   (e as HTMLElement).style.left = `${calcLeftOffset(
     columnId,
     getElementWidth(grid),
-    getColumnWidth(grid, columnAmount)
+    getColumnWidth(grid, columnAmount),
+    spacing[0]
   )}px`;
   (getData(id) as CompactData).columnHeight.set(
     columnId,
-    currentHeight + getElementHeight(e)
+    currentHeight + getElementHeight(e) + spacing[1]
   );
 }
 
@@ -113,15 +123,17 @@ function fillColumns(
   grid: Element,
   id: number,
   elements: Element[],
-  columnAmount: number
+  columnAmount: number,
+  spacing: [number, number]
 ) {
   const data: CompactData = {
     columnHeight: emptyColumns(columnAmount),
     columnCnt: columnAmount,
+    spacing: spacing ?? [0, 0],
   };
   setData(id, data);
   for (let e of elements) {
-    placeElement(e, grid, columnAmount);
+    placeElement(e, grid, columnAmount, spacing);
   }
 }
 
@@ -129,10 +141,11 @@ function updateColumns(
   grid: Element,
   id: number,
   elements: Element[],
-  columnAmount: number
+  columnAmount: number,
+  spacing: [number, number]
 ) {
   for (let e of elements) {
-    placeElement(e, grid, columnAmount);
+    placeElement(e, grid, columnAmount, spacing);
   }
 }
 
@@ -146,7 +159,20 @@ function getColumnWidth(grid: Element, columnAmount: number) {
 function calcLeftOffset(
   columnId: number,
   elemWidth: number,
-  columnWidth: number
+  columnWidth: number,
+  spacingX: number
 ) {
-  return columnId * (columnWidth - 1) + (columnWidth - elemWidth) / 2;
+  if (columnId == 0 || columnWidth - elemWidth > spacingX / 2) spacingX = 0;
+  return (
+    columnId * (columnWidth - 1) +
+    (columnWidth - elemWidth - spacingX) / 2 +
+    spacingX
+  );
+}
+
+function parseSpacing(grid: Element): [number, number] {
+  return [
+    parseTagValue(grid.className, config.SPACING_X),
+    parseTagValue(grid.className, config.SPACING_Y),
+  ];
 }

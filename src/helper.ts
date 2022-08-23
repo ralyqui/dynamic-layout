@@ -45,3 +45,11 @@ export function makeVisible(el: Element) {
   el.classList.remove(config.GRID_ELEMENT);
   el.classList.add(config.GRID_ELEMENT_VISIBLE);
 }
+
+export function parseTagValue(className: string, searched_tag: string) {
+  let tagWithValue = className
+    .split(" ")
+    .filter((cl) => new RegExp(`${searched_tag}-*`).test(cl))[0];
+  if (!tagWithValue) return 0;
+  return parseInt(tagWithValue.substring(searched_tag.length + 1)) ?? 0;
+}
