@@ -1,3 +1,9 @@
+/**
+ * @project Dynamic layout
+ * @author Raul Abdurakhmanov
+ * @license MIT License
+ */
+
 import * as config from "./config";
 import { renderCompact, updateCompact } from "./compact-grid";
 
